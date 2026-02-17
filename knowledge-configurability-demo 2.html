@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BDI Knowledge Configurability — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =========================================
+   Root Variables — BDI Design Tokens
+   ========================================= */
+:root {
+  --bdi-primary: #1A1F71;
+  --bdi-primary-dark: #0D1354;
+  --bdi-primary-light: #3949AB;
+  --bdi-accent: #E91E8C;
+  --bdi-accent-light: #FF4081;
+  --bdi-success: #00C853;
+  --bdi-success-soft: #E8F5E9;
+  --bdi-warning: #FFB300;
+  --bdi-warning-soft: #FFF8E1;
+  --bdi-error: #D32F2F;
+  --bdi-info: #2196F3;
+  --bdi-info-soft: #E3F2FD;
+  --bdi-white: #FFFFFF;
+  --bdi-surface: #F7F8FC;
+  --bdi-border: #E2E5F1;
+  --bdi-text-primary: #1E1E2E;
+  --bdi-text-secondary: #6B7294;
+  --bdi-gradient-header: linear-gradient(135deg, #1A1F71 0%, #0D1354 50%, #3949AB 100%);
+  --bdi-font-body: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --bdi-font-mono: 'Roboto Mono', 'Consolas', monospace;
+  --bdi-shadow-sm: 0 1px 3px rgba(26, 31, 113, 0.06);
+  --bdi-shadow-md: 0 2px 8px rgba(26, 31, 113, 0.08);
+  --bdi-shadow-lg: 0 4px 16px rgba(26, 31, 113, 0.10);
+  --bdi-shadow-xl: 0 8px 32px rgba(26, 31, 113, 0.12);
+  --l1-color: #1A1F71;
+  --l1-bg: #E8EAF6;
+  --l2-color: #5C6BC0;
+  --l2-bg: #EDE7F6;
+  --l3-color: #7986CB;
+  --l3-bg: #F3E5F5;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: var(--bdi-font-body);
+  background: #0a0e3a;
+  color: var(--bdi-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================
+   Main Container
+   ========================================= */
+.demo-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================
+   Scenes
+   ========================================= */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  pointer-events: none;
+  padding: 40px;
+}
+
+.scene.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* =========================================
+   Controls Bar
+   ========================================= */
+.controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(13, 19, 84, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.controls__brand {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--bdi-accent), var(--bdi-accent-light));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.controls__btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 14px;
+}
+.controls__btn:hover { background: rgba(255,255,255,0.2); }
+
+.controls__label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  font-family: var(--bdi-font-mono);
+  min-width: 64px;
+  text-align: center;
+}
+
+/* =========================================
+   Scene 0 — Title
+   ========================================= */
+.title-scene {
+  background: radial-gradient(ellipse at 30% 40%, rgba(57, 73, 171, 0.3) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(233, 30, 140, 0.15) 0%, transparent 50%),
+              linear-gradient(180deg, #0D1354, #0a0e3a);
+}
+
+.title-scene__logo {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.title-scene__logo svg {
+  opacity: 0.9;
+}
+
+.title-scene h1 {
+  font-size: 52px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.03em;
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+
+.title-scene h1 span {
+  background: linear-gradient(135deg, var(--bdi-accent-light), var(--bdi-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title-scene__sub {
+  font-size: 20px;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  max-width: 600px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.title-scene__badge {
+  margin-top: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+
+.title-scene__badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bdi-success);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* =========================================
+   Scene 1 — The Challenge
+   ========================================= */
+.challenge-scene {
+  background: linear-gradient(180deg, #0D1354, #0a0e3a);
+}
+
+.challenge-scene__content {
+  max-width: 900px;
+  width: 100%;
+}
+
+.scene-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(233, 30, 140, 0.15);
+  border: 1px solid rgba(233, 30, 140, 0.3);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bdi-accent-light);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+}
+
+.scene-title {
+  font-size: 38px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.scene-desc {
+  font-size: 17px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  max-width: 680px;
+  margin-bottom: 36px;
+}
+
+.pain-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.pain-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 28px 24px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.pain-card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pain-card__icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.pain-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.pain-card__text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+/* =========================================
+   Scene 2 — Three Layer Architecture
+   ========================================= */
+.layers-scene {
+  background: linear-gradient(180deg, #0D1354, #0a0e3a);
+}
+
+.layers-scene__content {
+  max-width: 960px;
+  width: 100%;
+}
+
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.layer-row {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 24px;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.layer-row.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.layer-row__badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  gap: 6px;
+}
+
+.layer-row__badge-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.layer-row__badge-circle.l1 { background: var(--l1-color); }
+.layer-row__badge-circle.l2 { background: var(--l2-color); }
+.layer-row__badge-circle.l3 { background: var(--l3-color); }
+
+.layer-row__badge-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.layer-row__body {
+  flex: 1;
+}
+
+.layer-row__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.layer-row__desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.layer-row__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.04);
+}
+
+/* =========================================
+   Scene 3 — Prompt Matching Demo
+   ========================================= */
+.match-scene {
+  background: var(--bdi-surface);
+}
+
+.match-scene__content {
+  max-width: 1060px;
+  width: 100%;
+}
+
+.mock-header {
+  background: var(--bdi-gradient-header);
+  padding: 0 24px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 12px rgba(13, 19, 84, 0.25);
+}
+
+.mock-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.mock-header__brand span {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 400;
+}
+
+.mock-header__nav {
+  display: flex;
+  gap: 4px;
+}
+
+.mock-header__nav-item {
+  padding: 6px 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  border-radius: 6px;
+}
+
+.mock-header__nav-item.active {
+  color: white;
+  background: rgba(255,255,255,0.15);
+}
+
+.mock-body {
+  background: var(--bdi-surface);
+  border-radius: 0 0 12px 12px;
+  padding: 28px;
+  box-shadow: var(--bdi-shadow-xl);
+  border: 1px solid var(--bdi-border);
+  border-top: none;
+}
+
+.mock-search {
+  background: white;
+  border-radius: 12px;
+  border: 2px solid var(--bdi-border);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  transition: border-color 0.3s;
+}
+
+.mock-search.focused {
+  border-color: var(--bdi-primary);
+  box-shadow: var(--bdi-shadow-lg);
+}
+
+.mock-search__input {
+  font-size: 16px;
+  color: var(--bdi-text-primary);
+  font-family: var(--bdi-font-body);
+  overflow: hidden;
+  white-space: nowrap;
+  min-height: 24px;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 20px;
+  background: var(--bdi-primary);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s ease infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.mock-results {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.mock-results.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mock-layer-group {
+  margin-bottom: 20px;
+}
+
+.mock-layer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mock-badge {
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mock-badge.l1 { background: var(--l1-bg); color: var(--l1-color); }
+.mock-badge.l2 { background: var(--l2-bg); color: var(--l2-color); }
+.mock-badge.l3 { background: var(--l3-bg); color: var(--l3-color); }
+
+.mock-layer-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bdi-text-primary);
+}
+
+.mock-layer-count {
+  font-size: 11px;
+  color: var(--bdi-text-secondary);
+  background: var(--bdi-surface);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.mock-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.mock-skill-card {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--bdi-border);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.mock-skill-card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mock-skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.mock-skill-card.l1::before { background: var(--l1-color); }
+.mock-skill-card.l2::before { background: var(--l2-color); }
+.mock-skill-card.l3::before { background: var(--l3-color); }
+
+.mock-skill-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.mock-skill-desc {
+  font-size: 12px;
+  color: var(--bdi-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mock-relevance {
+  height: 3px;
+  background: var(--bdi-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mock-relevance__fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--bdi-primary-light), var(--bdi-accent));
+  transition: width 1s ease;
+}
+
+.mock-relevance-label {
+  font-size: 10px;
+  color: var(--bdi-text-secondary);
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* =========================================
+   Scene 4 — Skill Deep Dive
+   ========================================= */
+.detail-scene {
+  background: var(--bdi-surface);
+}
+
+.detail-scene__content {
+  max-width: 1060px;
+  width: 100%;
+}
+
+.mock-detail-body {
+  padding: 28px;
+}
+
+.mock-breadcrumb {
+  font-size: 12px;
+  color: var(--bdi-text-secondary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mock-breadcrumb a {
+  color: var(--bdi-primary-light);
+  text-decoration: none;
+}
+
+.mock-detail-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.mock-detail-meta {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.mock-detail-sections {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.mock-section {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--bdi-border);
+  padding: 20px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.mock-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mock-section__title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mock-section__title::before {
+  content: '';
+  width: 3px;
+  height: 16px;
+  background: var(--bdi-primary);
+  border-radius: 2px;
+}
+
+.mock-section__text {
+  font-size: 13px;
+  color: var(--bdi-text-secondary);
+  line-height: 1.7;
+}
+
+.mock-code-block {
+  background: #1E1E2E;
+  color: #E8EAF6;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: var(--bdi-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.mock-vote-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.mock-vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--bdi-border);
+  font-size: 12px;
+  color: var(--bdi-text-secondary);
+  background: transparent;
+}
+
+.mock-action-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.mock-action-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1.5px solid var(--bdi-primary);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--bdi-primary);
+  background: transparent;
+}
+
+.mock-action-btn.primary {
+  background: var(--bdi-primary);
+  color: white;
+}
+
+/* =========================================
+   Scene 5 — Add Skill Wizard
+   ========================================= */
+.wizard-scene {
+  background: var(--bdi-surface);
+}
+
+.wizard-scene__content {
+  max-width: 1060px;
+  width: 100%;
+}
+
+.mock-wizard-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  gap: 0;
+}
+
+.mock-wiz-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  white-space: nowrap;
+}
+
+.mock-wiz-step.active { color: var(--bdi-primary); font-weight: 600; }
+.mock-wiz-step.completed { color: var(--bdi-success); }
+
+.mock-wiz-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid var(--bdi-border);
+  background: white;
+  color: var(--bdi-text-secondary);
+}
+
+.mock-wiz-step.active .mock-wiz-num {
+  border-color: var(--bdi-primary);
+  background: var(--bdi-primary);
+  color: white;
+}
+
+.mock-wiz-step.completed .mock-wiz-num {
+  border-color: var(--bdi-success);
+  background: var(--bdi-success);
+  color: white;
+}
+
+.mock-wiz-connector {
+  width: 24px;
+  height: 2px;
+  background: var(--bdi-border);
+  margin: 0 4px;
+}
+
+.mock-wiz-connector.done {
+  background: var(--bdi-success);
+}
+
+.mock-wizard-card {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid var(--bdi-border);
+  box-shadow: var(--bdi-shadow-md);
+  padding: 36px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mock-wizard-card__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.mock-wizard-card__desc {
+  font-size: 14px;
+  color: var(--bdi-text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.mock-form-group {
+  margin-bottom: 20px;
+}
+
+.mock-form-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.mock-form-input {
+  width: 100%;
+  height: 40px;
+  border: 1.5px solid var(--bdi-border);
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: var(--bdi-text-primary);
+  background: var(--bdi-surface);
+}
+
+.mock-form-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1.5px solid var(--bdi-border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--bdi-text-primary);
+  background: var(--bdi-surface);
+  line-height: 1.5;
+}
+
+.mock-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mock-checkbox {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1.5px solid var(--bdi-border);
+  font-size: 12px;
+  color: var(--bdi-text-secondary);
+  background: transparent;
+}
+
+.mock-checkbox.checked {
+  border-color: var(--bdi-primary);
+  color: var(--bdi-primary);
+  background: rgba(26, 31, 113, 0.06);
+  font-weight: 500;
+}
+
+/* =========================================
+   Scene 6 — Coverage Dashboard
+   ========================================= */
+.coverage-scene {
+  background: var(--bdi-surface);
+}
+
+.coverage-scene__content {
+  max-width: 1060px;
+  width: 100%;
+}
+
+.mock-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.mock-stat {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--bdi-border);
+  padding: 18px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.mock-stat.show { opacity: 1; transform: translateY(0); }
+
+.mock-stat__label {
+  font-size: 10px;
+  color: var(--bdi-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mock-stat__value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--bdi-primary);
+  font-family: var(--bdi-font-mono);
+}
+
+.mock-stat__detail {
+  font-size: 11px;
+  color: var(--bdi-text-secondary);
+  margin-top: 4px;
+}
+
+.mock-stat__bar {
+  height: 6px;
+  background: var(--bdi-surface);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.mock-stat__bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1.2s ease;
+}
+
+.mock-matrix {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--bdi-border);
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.mock-matrix.show { opacity: 1; }
+
+.mock-matrix table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mock-matrix th {
+  padding: 12px 16px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 2px solid var(--bdi-border);
+  background: var(--bdi-surface);
+}
+
+.mock-matrix th:first-child { text-align: left; }
+
+.mock-matrix td {
+  padding: 10px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--bdi-border);
+}
+
+.mock-matrix td:first-child { text-align: left; }
+
+.matrix-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.matrix-cell.good { background: rgba(0, 200, 83, 0.15); color: #2E7D32; }
+.matrix-cell.warn { background: rgba(255, 179, 0, 0.15); color: #F57F17; }
+.matrix-cell.empty { background: var(--bdi-surface); color: var(--bdi-text-secondary); }
+
+/* =========================================
+   Scene 7 — Client Workflow
+   ========================================= */
+.workflow-scene {
+  background: linear-gradient(180deg, #0D1354, #0a0e3a);
+}
+
+.workflow-scene__content {
+  max-width: 900px;
+  width: 100%;
+}
+
+.workflow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 12px;
+}
+
+.wf-step {
+  display: flex;
+  gap: 20px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.wf-step.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.wf-step__line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+}
+
+.wf-step__dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  background: rgba(233, 30, 140, 0.2);
+  color: var(--bdi-accent-light);
+  border: 1px solid rgba(233, 30, 140, 0.3);
+  flex-shrink: 0;
+}
+
+.wf-step__connector {
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  background: rgba(255,255,255,0.1);
+}
+
+.wf-step__body {
+  padding-bottom: 28px;
+}
+
+.wf-step__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.wf-step__desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+/* =========================================
+   Scene 8 — Closing
+   ========================================= */
+.closing-scene {
+  background: radial-gradient(ellipse at 50% 50%, rgba(57, 73, 171, 0.25) 0%, transparent 60%),
+              linear-gradient(180deg, #0D1354, #0a0e3a);
+}
+
+.closing-scene h1 {
+  font-size: 44px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.03em;
+  text-align: center;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.closing-scene h1 span {
+  background: linear-gradient(135deg, var(--bdi-accent-light), var(--bdi-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.closing-scene__sub {
+  font-size: 18px;
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+  max-width: 560px;
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+.closing-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 720px;
+}
+
+.closing-pillar {
+  text-align: center;
+  padding: 20px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.closing-pillar.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.closing-pillar__icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.closing-pillar__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.closing-pillar__text {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+}
+
+/* =========================================
+   Narrator Bar
+   ========================================= */
+.narrator {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background: rgba(13, 19, 84, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px 28px;
+  max-width: 700px;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.narrator.show {
+  opacity: 1;
+}
+
+.narrator__text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  text-align: center;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.narrator__text em {
+  color: var(--bdi-accent-light);
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+@media (max-width: 900px) {
+  .pain-cards { grid-template-columns: 1fr; }
+  .mock-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .mock-skill-grid { grid-template-columns: 1fr; }
+  .mock-detail-sections { grid-template-columns: 1fr; }
+  .closing-pillars { grid-template-columns: repeat(2, 1fr); }
+  .title-scene h1 { font-size: 36px; }
+  .scene-title { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="demo-container">
+
+  <!-- ═══════════════════════════════════════
+       SCENE 0 — Title
+       ═══════════════════════════════════════ -->
+  <div class="scene title-scene active" data-scene="0">
+    <div class="title-scene__logo">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+        <path d="M2 12h20"/>
+      </svg>
+    </div>
+    <h1>BDI <span>Knowledge</span><br>Configurability</h1>
+    <div class="title-scene__sub">
+      How we work with clients to configure the reasoning brain behind Business Decision Intelligence
+    </div>
+    <div class="title-scene__badge">
+      <span class="dot"></span>
+      CRE RAROC &mdash; Agentic Intelligence Platform
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 1 — The Challenge
+       ═══════════════════════════════════════ -->
+  <div class="scene challenge-scene" data-scene="1">
+    <div class="challenge-scene__content">
+      <div class="scene-label">The Opportunity</div>
+      <div class="scene-title">Every client reasons differently.<br>BDI adapts to them.</div>
+      <div class="scene-desc">
+        Traditional analytics tools give one-size-fits-all reports. BDI's knowledge layer is fully configurable &mdash; each client's decision logic, governance rules, and thinking patterns can be tailored without changing the platform.
+      </div>
+      <div class="pain-cards">
+        <div class="pain-card" data-delay="0">
+          <div class="pain-card__icon">&#x1F3E6;</div>
+          <div class="pain-card__title">Institution-Specific Logic</div>
+          <div class="pain-card__text">
+            Each bank has different hurdle rates, risk appetites, capital models, and decision processes. Knowledge skills encode these uniquely.
+          </div>
+        </div>
+        <div class="pain-card" data-delay="300">
+          <div class="pain-card__icon">&#x1F9E0;</div>
+          <div class="pain-card__title">Configurable Reasoning</div>
+          <div class="pain-card__text">
+            The same data can tell different stories. Thinking shapes, governance rules, and trade-off frameworks are all client-configurable.
+          </div>
+        </div>
+        <div class="pain-card" data-delay="600">
+          <div class="pain-card__icon">&#x1F50D;</div>
+          <div class="pain-card__title">Full Transparency</div>
+          <div class="pain-card__text">
+            Clients can see exactly which knowledge powers each answer. Vote, comment, and propose improvements through the configurator.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 2 — Three-Layer Architecture
+       ═══════════════════════════════════════ -->
+  <div class="scene layers-scene" data-scene="2">
+    <div class="layers-scene__content">
+      <div class="scene-label">Architecture</div>
+      <div class="scene-title">Three layers of configurable knowledge</div>
+      <div class="scene-desc">
+        Knowledge is organized into three layers, each with a distinct role. Clients can configure any layer without breaking the reasoning spine.
+      </div>
+      <div class="layer-stack">
+        <div class="layer-row" data-delay="0">
+          <div class="layer-row__badge">
+            <div class="layer-row__badge-circle l1">L1</div>
+            <div class="layer-row__badge-name">Physics</div>
+          </div>
+          <div class="layer-row__body">
+            <div class="layer-row__title">Decision Physics</div>
+            <div class="layer-row__desc">Stable reasoning that remains valid even as models change. Trade-offs, capital-growth tension, time horizon effects, signal classification.</div>
+            <div class="layer-row__skills">
+              <span class="skill-chip">Objective Trade-offs</span>
+              <span class="skill-chip">Capital vs Growth</span>
+              <span class="skill-chip">Time Horizon Effects</span>
+              <span class="skill-chip">Signal Classification</span>
+              <span class="skill-chip">Progressive Reveal</span>
+              <span class="skill-chip">Concentration Risk</span>
+            </div>
+          </div>
+        </div>
+        <div class="layer-row" data-delay="500">
+          <div class="layer-row__badge">
+            <div class="layer-row__badge-circle l2">L2</div>
+            <div class="layer-row__badge-name">Cognitive</div>
+          </div>
+          <div class="layer-row__body">
+            <div class="layer-row__title">Cognitive Modes (Thinking Shapes)</div>
+            <div class="layer-row__desc">How the system reasons about data. Each shape defines a different analytical lens &mdash; investigation, diagnosis, comparison, recommendation.</div>
+            <div class="layer-row__skills">
+              <span class="skill-chip">Storyteller</span>
+              <span class="skill-chip">Detective</span>
+              <span class="skill-chip">Advisor</span>
+              <span class="skill-chip">Doctor</span>
+              <span class="skill-chip">Scientist</span>
+              <span class="skill-chip">Judge</span>
+              <span class="skill-chip">Reporter</span>
+            </div>
+          </div>
+        </div>
+        <div class="layer-row" data-delay="1000">
+          <div class="layer-row__badge">
+            <div class="layer-row__badge-circle l3">L3</div>
+            <div class="layer-row__badge-name">Assembly</div>
+          </div>
+          <div class="layer-row__body">
+            <div class="layer-row__title">Assembly &amp; Bindings</div>
+            <div class="layer-row__desc">UX governance, formatting rules, theme-shape composition. How analysis is assembled into decision-ready outputs for different stakeholders.</div>
+            <div class="layer-row__skills">
+              <span class="skill-chip">Exec Governance</span>
+              <span class="skill-chip">Credit Committee</span>
+              <span class="skill-chip">CFO Pricing</span>
+              <span class="skill-chip">CRO Portfolio</span>
+              <span class="skill-chip">Visualization UX</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 3 — Prompt Matching Demo
+       ═══════════════════════════════════════ -->
+  <div class="scene match-scene" data-scene="3">
+    <div class="match-scene__content">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div class="scene-label" style="display:inline-flex;">Live Demo</div>
+      </div>
+      <div class="mock-header">
+        <div class="mock-header__brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+          </svg>
+          BDI Knowledge Skills <span>Configurator</span>
+        </div>
+        <div class="mock-header__nav">
+          <div class="mock-header__nav-item active">Prompt Match</div>
+          <div class="mock-header__nav-item">Add Skill</div>
+          <div class="mock-header__nav-item">Coverage</div>
+        </div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-search" id="mock-search">
+          <div class="mock-search__input" id="typing-target"><span class="typing-cursor"></span></div>
+        </div>
+        <div class="mock-results" id="mock-results">
+          <div class="mock-layer-group">
+            <div class="mock-layer-header">
+              <span class="mock-badge l1">L1</span>
+              <span class="mock-layer-title">Decision Physics</span>
+              <span class="mock-layer-count">3 skills</span>
+            </div>
+            <div class="mock-skill-grid">
+              <div class="mock-skill-card l1" data-delay="0">
+                <div class="mock-skill-name">Objective Trade-offs</div>
+                <div class="mock-skill-desc">Surfaces what is gained and what is given up in every decision. Return vs capital vs risk.</div>
+                <div class="mock-relevance"><div class="mock-relevance__fill" style="width:0" data-width="92%"></div></div>
+                <div class="mock-relevance-label">92% match</div>
+              </div>
+              <div class="mock-skill-card l1" data-delay="150">
+                <div class="mock-skill-name">Capital vs Growth Tension</div>
+                <div class="mock-skill-desc">Capital consumed by one decision constrains all others. Growth requires deployment.</div>
+                <div class="mock-relevance"><div class="mock-relevance__fill" style="width:0" data-width="78%"></div></div>
+                <div class="mock-relevance-label">78% match</div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-layer-group">
+            <div class="mock-layer-header">
+              <span class="mock-badge l2">L2</span>
+              <span class="mock-layer-title">Cognitive Modes</span>
+              <span class="mock-layer-count">2 skills</span>
+            </div>
+            <div class="mock-skill-grid">
+              <div class="mock-skill-card l2" data-delay="300">
+                <div class="mock-skill-name">Advisor Cognitive Mode</div>
+                <div class="mock-skill-desc">Decision options with gain/give-up framing. Evidence-gated recommendations.</div>
+                <div class="mock-relevance"><div class="mock-relevance__fill" style="width:0" data-width="88%"></div></div>
+                <div class="mock-relevance-label">88% match</div>
+              </div>
+              <div class="mock-skill-card l2" data-delay="450">
+                <div class="mock-skill-name">Storyteller Cognitive Mode</div>
+                <div class="mock-skill-desc">Executive-ready causal story with balance-sheet-first framing.</div>
+                <div class="mock-relevance"><div class="mock-relevance__fill" style="width:0" data-width="65%"></div></div>
+                <div class="mock-relevance-label">65% match</div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-layer-group">
+            <div class="mock-layer-header">
+              <span class="mock-badge l3">L3</span>
+              <span class="mock-layer-title">Assembly &amp; Bindings</span>
+              <span class="mock-layer-count">1 skill</span>
+            </div>
+            <div class="mock-skill-grid">
+              <div class="mock-skill-card l3" data-delay="600">
+                <div class="mock-skill-name">Credit Committee Assembly</div>
+                <div class="mock-skill-desc">Deal approval structure with decision banner, trade-off statements, and conditions.</div>
+                <div class="mock-relevance"><div class="mock-relevance__fill" style="width:0" data-width="72%"></div></div>
+                <div class="mock-relevance-label">72% match</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 4 — Skill Deep Dive
+       ═══════════════════════════════════════ -->
+  <div class="scene detail-scene" data-scene="4">
+    <div class="detail-scene__content">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div class="scene-label" style="display:inline-flex;">Skill Detail</div>
+      </div>
+      <div class="mock-header">
+        <div class="mock-header__brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+          </svg>
+          BDI Knowledge Skills <span>Configurator</span>
+        </div>
+        <div class="mock-header__nav">
+          <div class="mock-header__nav-item active">Prompt Match</div>
+          <div class="mock-header__nav-item">Add Skill</div>
+          <div class="mock-header__nav-item">Coverage</div>
+        </div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-detail-body">
+          <div class="mock-breadcrumb">
+            <a>Prompt Match</a> &rsaquo; <span>L1 Decision Physics</span> &rsaquo; <strong>Objective Trade-offs</strong>
+          </div>
+          <div class="mock-detail-title">Objective Trade-offs</div>
+          <div class="mock-detail-meta">
+            <span class="mock-badge l1">L1 Decision Physics</span>
+            <span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0;">ADVISOR</span>
+            <span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0;">JUDGE</span>
+            <span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0;">STORYTELLER</span>
+            <span class="mock-badge" style="background: #FFF3E0; color: #E65100;">profitability</span>
+            <span class="mock-badge" style="background: #FFF3E0; color: #E65100;">concentration</span>
+          </div>
+          <div class="mock-detail-sections">
+            <div>
+              <div class="mock-section" data-delay="0">
+                <div class="mock-section__title">Purpose</div>
+                <div class="mock-section__text">
+                  Encodes the fundamental tension between competing business objectives. Every decision involves trade-offs &mdash; pursuing one objective comes at the expense of another. BDI must <strong>always surface what is gained and what is given up</strong>.
+                </div>
+              </div>
+              <div class="mock-section" data-delay="300" style="margin-top:16px;">
+                <div class="mock-section__title">Core Rules</div>
+                <div class="mock-section__text">
+                  <div class="mock-code-block">
+// Must NEVER do:
+- Recommend maximizing one objective
+  without acknowledging what is sacrificed
+- Present any decision as costless
+- Ignore capital constraints when
+  discussing growth opportunities
+
+// Must remain flexible:
+- Relative weighting of objectives
+- Which trade-offs are most material
+                  </div>
+                </div>
+              </div>
+              <div class="mock-section" data-delay="600" style="margin-top:16px;">
+                <div class="mock-section__title">Good vs Bad Example</div>
+                <div class="mock-section__text">
+                  <div style="background: var(--bdi-success-soft); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 12px; line-height: 1.6;">
+                    <strong style="color: #2E7D32;">Good:</strong> "Pursuing multifamily growth deploys $500M capital, improving NII by 12% but reducing RORAC from 14.2% to 12.8%. Trade-off: higher income now, less capital flexibility later."
+                  </div>
+                  <div style="background: #FFEBEE; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6;">
+                    <strong style="color: #C62828;">Bad:</strong> "We should grow the multifamily portfolio because it has good returns."
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="mock-section" data-delay="200">
+                <div class="mock-section__title">Metadata</div>
+                <div class="mock-section__text">
+                  <div style="display: grid; gap: 8px; font-size: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--bdi-border);">
+                      <span style="color: var(--bdi-text-secondary);">Owner</span>
+                      <strong>BDI Core</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--bdi-border);">
+                      <span style="color: var(--bdi-text-secondary);">Version</span>
+                      <strong>1.0.0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--bdi-border);">
+                      <span style="color: var(--bdi-text-secondary);">File</span>
+                      <strong style="font-family: var(--bdi-font-mono); font-size: 11px;">skills/L1/objective-tradeoffs.md</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="mock-vote-row">
+                  <div class="mock-vote-btn" style="border-color: var(--bdi-primary); color: var(--bdi-primary); background: rgba(26,31,113,0.06);">&#9650; 12</div>
+                  <div class="mock-vote-btn">&#9660; 1</div>
+                </div>
+              </div>
+              <div class="mock-section" data-delay="500" style="margin-top:16px;">
+                <div class="mock-section__title">Client Actions</div>
+                <div class="mock-action-bar" style="flex-direction: column;">
+                  <div class="mock-action-btn primary" style="text-align:center;">Request Edit</div>
+                  <div class="mock-action-btn" style="text-align:center;">Propose Improvement</div>
+                  <div class="mock-action-btn" style="text-align:center;">Add Comment</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 5 — Add Skill Wizard
+       ═══════════════════════════════════════ -->
+  <div class="scene wizard-scene" data-scene="5">
+    <div class="wizard-scene__content">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div class="scene-label" style="display:inline-flex;">Extending Knowledge</div>
+      </div>
+      <div class="mock-header">
+        <div class="mock-header__brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+          </svg>
+          BDI Knowledge Skills <span>Configurator</span>
+        </div>
+        <div class="mock-header__nav">
+          <div class="mock-header__nav-item">Prompt Match</div>
+          <div class="mock-header__nav-item active">Add Skill</div>
+          <div class="mock-header__nav-item">Coverage</div>
+        </div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-wizard-progress">
+          <div class="mock-wiz-step completed"><div class="mock-wiz-num">&#10003;</div> Name</div>
+          <div class="mock-wiz-connector done"></div>
+          <div class="mock-wiz-step completed"><div class="mock-wiz-num">&#10003;</div> Purpose</div>
+          <div class="mock-wiz-connector done"></div>
+          <div class="mock-wiz-step active"><div class="mock-wiz-num">3</div> Rules</div>
+          <div class="mock-wiz-connector"></div>
+          <div class="mock-wiz-step"><div class="mock-wiz-num">4</div> Shapes</div>
+          <div class="mock-wiz-connector"></div>
+          <div class="mock-wiz-step"><div class="mock-wiz-num">5</div> Examples</div>
+          <div class="mock-wiz-connector"></div>
+          <div class="mock-wiz-step"><div class="mock-wiz-num">6</div> Tests</div>
+          <div class="mock-wiz-connector"></div>
+          <div class="mock-wiz-step"><div class="mock-wiz-num">7</div> Review</div>
+        </div>
+        <div class="mock-wizard-card">
+          <div class="mock-wizard-card__title">Define Rules &amp; Guardrails</div>
+          <div class="mock-wizard-card__desc">
+            What must BDI <strong>never do</strong> when applying this skill? What should remain flexible? What must not be hardcoded? These guardrails protect reasoning integrity while allowing client-specific configuration.
+          </div>
+          <div class="mock-form-group">
+            <div class="mock-form-label">Must NEVER do</div>
+            <div class="mock-form-textarea" style="color: var(--bdi-text-primary);">
+              Recommend holding a position without disclosing liquidity risk and time-to-exit cost. Present mark-to-market as realized value. Assume forced-sale proceeds equal fair value.
+            </div>
+          </div>
+          <div class="mock-form-group">
+            <div class="mock-form-label">Should remain flexible</div>
+            <div class="mock-form-textarea" style="color: var(--bdi-text-primary);">
+              Liquidity discount rate (client-specific). Exit timeline assumptions (varies by asset class). Market stress severity for haircut scenarios.
+            </div>
+          </div>
+          <div class="mock-form-group">
+            <div class="mock-form-label">Linked Thinking Shapes</div>
+            <div class="mock-checkbox-group">
+              <span class="mock-checkbox checked">ADVISOR</span>
+              <span class="mock-checkbox checked">DOCTOR</span>
+              <span class="mock-checkbox">DETECTIVE</span>
+              <span class="mock-checkbox">SCIENTIST</span>
+              <span class="mock-checkbox">STORYTELLER</span>
+              <span class="mock-checkbox">JUDGE</span>
+              <span class="mock-checkbox">REPORTER</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--bdi-border);">
+            <div class="mock-action-btn" style="opacity: 0.5;">Back</div>
+            <div class="mock-action-btn primary">Continue to Shapes &rarr;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 6 — Coverage Dashboard
+       ═══════════════════════════════════════ -->
+  <div class="scene coverage-scene" data-scene="6">
+    <div class="coverage-scene__content">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div class="scene-label" style="display:inline-flex;">Coverage Dashboard</div>
+      </div>
+      <div class="mock-header">
+        <div class="mock-header__brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+          </svg>
+          BDI Knowledge Skills <span>Configurator</span>
+        </div>
+        <div class="mock-header__nav">
+          <div class="mock-header__nav-item">Prompt Match</div>
+          <div class="mock-header__nav-item">Add Skill</div>
+          <div class="mock-header__nav-item active">Coverage</div>
+        </div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-stat-grid">
+          <div class="mock-stat" data-delay="0" style="border-top: 3px solid var(--bdi-primary);">
+            <div class="mock-stat__label">Total Skills</div>
+            <div class="mock-stat__value">20</div>
+            <div class="mock-stat__detail">6 L1 &middot; 8 L2 &middot; 6 L3</div>
+          </div>
+          <div class="mock-stat" data-delay="200" style="border-top: 3px solid var(--bdi-success);">
+            <div class="mock-stat__label">Prompt Coverage</div>
+            <div class="mock-stat__value">94%</div>
+            <div class="mock-stat__detail">39 of 41 prompts covered</div>
+            <div class="mock-stat__bar"><div class="mock-stat__bar-fill" style="width:0; background: var(--bdi-success);" data-width="94%"></div></div>
+          </div>
+          <div class="mock-stat" data-delay="400" style="border-top: 3px solid var(--bdi-warning);">
+            <div class="mock-stat__label">Weak Prompts</div>
+            <div class="mock-stat__value">2</div>
+            <div class="mock-stat__detail">Need more skill coverage</div>
+          </div>
+          <div class="mock-stat" data-delay="600" style="border-top: 3px solid var(--bdi-accent);">
+            <div class="mock-stat__label">Community Feedback</div>
+            <div class="mock-stat__value">142</div>
+            <div class="mock-stat__detail">119 votes &middot; 18 comments &middot; 5 edits</div>
+          </div>
+        </div>
+
+        <div class="mock-matrix" id="mock-matrix">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 140px;">Shape</th>
+                <th>L1 Physics</th>
+                <th>L2 Cognitive</th>
+                <th>L3 Assembly</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">STORYTELLER</span></td>
+                <td><span class="matrix-cell good">4</span></td>
+                <td><span class="matrix-cell good">2</span></td>
+                <td><span class="matrix-cell good">3</span></td>
+                <td style="font-weight: 600;">9</td>
+              </tr>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">ADVISOR</span></td>
+                <td><span class="matrix-cell good">4</span></td>
+                <td><span class="matrix-cell good">2</span></td>
+                <td><span class="matrix-cell good">3</span></td>
+                <td style="font-weight: 600;">9</td>
+              </tr>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">DETECTIVE</span></td>
+                <td><span class="matrix-cell good">3</span></td>
+                <td><span class="matrix-cell good">2</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td style="font-weight: 600;">6</td>
+              </tr>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">DOCTOR</span></td>
+                <td><span class="matrix-cell good">2</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td style="font-weight: 600;">4</td>
+              </tr>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">SCIENTIST</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td style="font-weight: 600;">3</td>
+              </tr>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">JUDGE</span></td>
+                <td><span class="matrix-cell good">2</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td><span class="matrix-cell empty">0</span></td>
+                <td style="font-weight: 600;">3</td>
+              </tr>
+              <tr>
+                <td><span class="mock-badge" style="background: var(--bdi-info-soft); color: #1565C0; font-size: 10px;">REPORTER</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td><span class="matrix-cell warn">1</span></td>
+                <td style="font-weight: 600;">3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 7 — Client Engagement Workflow
+       ═══════════════════════════════════════ -->
+  <div class="scene workflow-scene" data-scene="7">
+    <div class="workflow-scene__content">
+      <div class="scene-label">Client Engagement</div>
+      <div class="scene-title">How we configure BDI with clients</div>
+      <div class="scene-desc">
+        A structured engagement workflow ensures knowledge is tailored to each institution's decision culture.
+      </div>
+      <div class="workflow-steps">
+        <div class="wf-step" data-delay="0">
+          <div class="wf-step__line">
+            <div class="wf-step__dot">1</div>
+            <div class="wf-step__connector"></div>
+          </div>
+          <div class="wf-step__body">
+            <div class="wf-step__title">Discovery &amp; Mapping</div>
+            <div class="wf-step__desc">Identify the client's decision workflows, stakeholders, risk appetite, and governance rules. Map their existing processes to BDI's knowledge layer model.</div>
+          </div>
+        </div>
+        <div class="wf-step" data-delay="400">
+          <div class="wf-step__line">
+            <div class="wf-step__dot">2</div>
+            <div class="wf-step__connector"></div>
+          </div>
+          <div class="wf-step__body">
+            <div class="wf-step__title">Knowledge Seed &amp; Calibration</div>
+            <div class="wf-step__desc">Deploy base skills and calibrate L1 decision physics to the client's objectives, hurdle rates, and capital model. Configure L3 bindings for their specific governance requirements.</div>
+          </div>
+        </div>
+        <div class="wf-step" data-delay="800">
+          <div class="wf-step__line">
+            <div class="wf-step__dot">3</div>
+            <div class="wf-step__connector"></div>
+          </div>
+          <div class="wf-step__body">
+            <div class="wf-step__title">Prompt Testing &amp; Validation</div>
+            <div class="wf-step__desc">Run the client's real questions through the configurator. Verify skill matching, coverage gaps, and output quality. Iterate until the knowledge layer matches their reasoning expectations.</div>
+          </div>
+        </div>
+        <div class="wf-step" data-delay="1200">
+          <div class="wf-step__line">
+            <div class="wf-step__dot">4</div>
+            <div class="wf-step__connector"></div>
+          </div>
+          <div class="wf-step__body">
+            <div class="wf-step__title">Collaborative Refinement</div>
+            <div class="wf-step__desc">Client stakeholders use the configurator to vote, comment, request edits, and propose improvements. Knowledge evolves through structured feedback loops.</div>
+          </div>
+        </div>
+        <div class="wf-step" data-delay="1600">
+          <div class="wf-step__line">
+            <div class="wf-step__dot">5</div>
+          </div>
+          <div class="wf-step__body">
+            <div class="wf-step__title">Continuous Knowledge Evolution</div>
+            <div class="wf-step__desc">Coverage dashboard monitors health. New skills added through guided wizards. Gap analysis triggers proactive improvements. Knowledge scales with the client's needs.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SCENE 8 — Closing
+       ═══════════════════════════════════════ -->
+  <div class="scene closing-scene" data-scene="8">
+    <div class="title-scene__logo" style="margin-bottom: 28px;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+        <path d="M2 12h20"/>
+      </svg>
+    </div>
+    <h1>Knowledge that adapts.<br><span>Decisions that scale.</span></h1>
+    <div class="closing-scene__sub">
+      BDI's configurable knowledge layer means every client gets reasoning that matches their institution &mdash; without custom code.
+    </div>
+    <div class="closing-pillars">
+      <div class="closing-pillar" data-delay="0">
+        <div class="closing-pillar__icon">&#x1F4CA;</div>
+        <div class="closing-pillar__title">Visible</div>
+        <div class="closing-pillar__text">See which knowledge powers every answer</div>
+      </div>
+      <div class="closing-pillar" data-delay="200">
+        <div class="closing-pillar__icon">&#x270F;&#xFE0F;</div>
+        <div class="closing-pillar__title">Editable</div>
+        <div class="closing-pillar__text">Vote, comment, request changes</div>
+      </div>
+      <div class="closing-pillar" data-delay="400">
+        <div class="closing-pillar__icon">&#x1F9E9;</div>
+        <div class="closing-pillar__title">Extensible</div>
+        <div class="closing-pillar__text">Add new skills through guided wizards</div>
+      </div>
+      <div class="closing-pillar" data-delay="600">
+        <div class="closing-pillar__icon">&#x1F50D;</div>
+        <div class="closing-pillar__title">Transparent</div>
+        <div class="closing-pillar__text">Coverage gaps always tracked</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       Narrator
+       ═══════════════════════════════════════ -->
+  <div class="narrator" id="narrator">
+    <div class="narrator__text" id="narrator-text"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       Controls
+       ═══════════════════════════════════════ -->
+  <div class="controls">
+    <div class="controls__brand">BDI Demo</div>
+    <button class="controls__btn" id="btn-prev" title="Previous">&#9664;</button>
+    <button class="controls__btn" id="btn-play" title="Play/Pause">&#9654;</button>
+    <button class="controls__btn" id="btn-next" title="Next">&#9654;</button>
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-bar__fill" id="progress-fill"></div>
+    </div>
+    <div class="controls__label" id="scene-label">1 / 9</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// Demo Engine
+// ═══════════════════════════════════════
+
+const SCENES = document.querySelectorAll('.scene');
+const TOTAL = SCENES.length;
+let currentScene = 0;
+let isPlaying = false;
+let autoTimer = null;
+
+// Scene durations in ms
+const SCENE_DURATIONS = [
+  5000,   // 0: Title
+  7000,   // 1: Challenge
+  9000,   // 2: Layers
+  10000,  // 3: Prompt Match
+  9000,   // 4: Skill Detail
+  8000,   // 5: Wizard
+  9000,   // 6: Coverage
+  10000,  // 7: Client Workflow
+  6000,   // 8: Closing
+];
+
+// Narrator texts per scene
+const NARRATOR_TEXTS = [
+  '',
+  'Every financial institution has unique decision logic. BDI adapts its reasoning to match.',
+  'Knowledge is organized in three layers &mdash; each independently configurable per client.',
+  'Clients type real questions and <em>see exactly which knowledge activates</em> and why.',
+  'Every skill is fully transparent &mdash; clients can see rules, examples, and <em>propose changes</em>.',
+  'New knowledge is added through a <em>guided 7-step wizard</em> with guardrails and validation.',
+  'The coverage dashboard gives a <em>real-time view</em> of knowledge health and community feedback.',
+  'A structured 5-step engagement ensures BDI is <em>tailored to each institution</em>.',
+  '',
+];
+
+function goToScene(index) {
+  if (index < 0 || index >= TOTAL) return;
+  
+  // Deactivate current
+  SCENES[currentScene].classList.remove('active');
+  
+  currentScene = index;
+  
+  // Activate new
+  SCENES[currentScene].classList.add('active');
+  
+  // Update UI
+  updateControls();
+  updateNarrator();
+  triggerSceneAnimations();
+  
+  // Reset auto-advance timer
+  if (isPlaying) {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => {
+      if (currentScene < TOTAL - 1) {
+        goToScene(currentScene + 1);
+      } else {
+        togglePlay();
+      }
+    }, SCENE_DURATIONS[currentScene]);
+  }
+}
+
+function updateControls() {
+  document.getElementById('scene-label').textContent = `${currentScene + 1} / ${TOTAL}`;
+  document.getElementById('progress-fill').style.width = `${((currentScene + 1) / TOTAL) * 100}%`;
+}
+
+function updateNarrator() {
+  const narrator = document.getElementById('narrator');
+  const text = NARRATOR_TEXTS[currentScene];
+  
+  if (text) {
+    document.getElementById('narrator-text').innerHTML = text;
+    narrator.classList.add('show');
+  } else {
+    narrator.classList.remove('show');
+  }
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById('btn-play').innerHTML = isPlaying ? '&#10074;&#10074;' : '&#9654;';
+  
+  if (isPlaying) {
+    autoTimer = setTimeout(() => {
+      if (currentScene < TOTAL - 1) {
+        goToScene(currentScene + 1);
+      } else {
+        togglePlay();
+      }
+    }, SCENE_DURATIONS[currentScene]);
+  } else {
+    clearTimeout(autoTimer);
+  }
+}
+
+// Scene-specific animations
+function triggerSceneAnimations() {
+  const scene = SCENES[currentScene];
+  
+  // Animate pain cards (scene 1)
+  if (currentScene === 1) {
+    scene.querySelectorAll('.pain-card').forEach((card, i) => {
+      card.classList.remove('show');
+      setTimeout(() => card.classList.add('show'), parseInt(card.dataset.delay || 0) + 400);
+    });
+  }
+  
+  // Animate layer rows (scene 2)
+  if (currentScene === 2) {
+    scene.querySelectorAll('.layer-row').forEach((row) => {
+      row.classList.remove('show');
+      setTimeout(() => row.classList.add('show'), parseInt(row.dataset.delay || 0) + 400);
+    });
+  }
+  
+  // Animate typing + results (scene 3)
+  if (currentScene === 3) {
+    const target = document.getElementById('typing-target');
+    const searchBox = document.getElementById('mock-search');
+    const results = document.getElementById('mock-results');
+    const text = 'Should we approve this deal? What are the trade-offs?';
+    
+    target.innerHTML = '<span class="typing-cursor"></span>';
+    searchBox.classList.remove('focused');
+    results.classList.remove('show');
+    
+    // Reset skill cards
+    scene.querySelectorAll('.mock-skill-card').forEach(c => {
+      c.classList.remove('show');
+    });
+    scene.querySelectorAll('.mock-relevance__fill').forEach(f => {
+      f.style.width = '0';
+    });
+    
+    setTimeout(() => {
+      searchBox.classList.add('focused');
+      let i = 0;
+      const typeInterval = setInterval(() => {
+        if (i < text.length) {
+          target.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+          i++;
+        } else {
+          clearInterval(typeInterval);
+          // Show results
+          setTimeout(() => {
+            results.classList.add('show');
+            // Animate cards
+            scene.querySelectorAll('.mock-skill-card').forEach((card) => {
+              setTimeout(() => {
+                card.classList.add('show');
+              }, parseInt(card.dataset.delay || 0) + 200);
+            });
+            // Animate relevance bars
+            setTimeout(() => {
+              scene.querySelectorAll('.mock-relevance__fill').forEach(f => {
+                f.style.width = f.dataset.width;
+              });
+            }, 600);
+          }, 400);
+        }
+      }, 35);
+    }, 600);
+  }
+  
+  // Animate detail sections (scene 4)
+  if (currentScene === 4) {
+    scene.querySelectorAll('.mock-section').forEach((section) => {
+      section.classList.remove('show');
+      setTimeout(() => section.classList.add('show'), parseInt(section.dataset.delay || 0) + 400);
+    });
+  }
+  
+  // Animate stats + matrix (scene 6)
+  if (currentScene === 6) {
+    scene.querySelectorAll('.mock-stat').forEach((stat) => {
+      stat.classList.remove('show');
+      setTimeout(() => {
+        stat.classList.add('show');
+        // Animate bars
+        setTimeout(() => {
+          stat.querySelectorAll('.mock-stat__bar-fill').forEach(f => {
+            f.style.width = f.dataset.width;
+          });
+        }, 300);
+      }, parseInt(stat.dataset.delay || 0) + 300);
+    });
+    
+    const matrix = document.getElementById('mock-matrix');
+    matrix.classList.remove('show');
+    setTimeout(() => matrix.classList.add('show'), 1200);
+  }
+  
+  // Animate workflow steps (scene 7)
+  if (currentScene === 7) {
+    scene.querySelectorAll('.wf-step').forEach((step) => {
+      step.classList.remove('show');
+      setTimeout(() => step.classList.add('show'), parseInt(step.dataset.delay || 0) + 400);
+    });
+  }
+  
+  // Animate closing pillars (scene 8)
+  if (currentScene === 8) {
+    scene.querySelectorAll('.closing-pillar').forEach((pillar) => {
+      pillar.classList.remove('show');
+      setTimeout(() => pillar.classList.add('show'), parseInt(pillar.dataset.delay || 0) + 400);
+    });
+  }
+}
+
+// Event listeners
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if (currentScene > 0) goToScene(currentScene - 1);
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (currentScene < TOTAL - 1) goToScene(currentScene + 1);
+});
+
+document.getElementById('btn-play').addEventListener('click', togglePlay);
+
+document.getElementById('progress-bar').addEventListener('click', (e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  const target = Math.floor(pct * TOTAL);
+  goToScene(Math.max(0, Math.min(TOTAL - 1, target)));
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    if (currentScene < TOTAL - 1) goToScene(currentScene + 1);
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (currentScene > 0) goToScene(currentScene - 1);
+  }
+  if (e.key === 'p') {
+    togglePlay();
+  }
+});
+
+// Initialize
+updateControls();
+</script>
+
+</body>
+</html>
