@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BDI Sales Video Deck</title>
+  <style>
+    :root {
+      --bdi-primary: #1a1f71;
+      --bdi-primary-dark: #0d1354;
+      --bdi-primary-light: #3949ab;
+      --bdi-accent: #e91e8c;
+      --bdi-accent-light: #ff4081;
+      --bdi-success: #00c853;
+      --bdi-white: #ffffff;
+      --bdi-surface: #f7f8fc;
+      --bdi-text-primary: #1e1e2e;
+      --bdi-text-secondary: #93a0d5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+      color: var(--bdi-white);
+      background: #090d34;
+    }
+
+    .video-root {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(57, 73, 171, 0.45), transparent 40%),
+        radial-gradient(circle at 80% 35%, rgba(233, 30, 140, 0.28), transparent 38%),
+        linear-gradient(160deg, #070a2a 0%, #0d1354 42%, #060927 100%);
+    }
+
+    .video-root::before,
+    .video-root::after {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .video-root::before {
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px) 0 0 / 140px 140px;
+      opacity: 0.2;
+      animation: drift 18s linear infinite;
+    }
+
+    .video-root::after {
+      background:
+        linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.12) 50%, transparent 70%);
+      animation: sheen 7s ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-90px, -60px) scale(1.03); }
+    }
+
+    @keyframes sheen {
+      0%, 100% { transform: translateX(-35%); }
+      50% { transform: translateX(30%); }
+    }
+
+    .scanline {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.04) 0,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: soft-light;
+      opacity: 0.25;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 24px;
+      left: 32px;
+      right: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 15;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      animation: topBarFade 30s linear forwards;
+    }
+
+    .top-bar .badge {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .timeline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      z-index: 20;
+    }
+
+    .timeline-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #7b85ff 0%, #ff4ea8 50%, #ffa940 100%);
+      animation: progress 30s linear forwards;
+      box-shadow: 0 0 24px rgba(255, 64, 129, 0.8);
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      padding: 96px 80px 80px;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.02);
+    }
+
+    .scene-1 { animation: sceneOne 30s linear forwards; }
+    .scene-2 { animation: sceneTwo 30s linear forwards; }
+    .scene-3 { animation: sceneThree 30s linear forwards; }
+
+    .scene h1 {
+      font-size: 66px;
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      text-shadow: 0 16px 28px rgba(0, 0, 0, 0.45);
+      max-width: 1220px;
+    }
+
+    .gradient-word {
+      background: linear-gradient(135deg, var(--bdi-accent-light), #c77dff 50%, #6f7dff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subheadline {
+      margin-top: 16px;
+      max-width: 1020px;
+      font-size: 26px;
+      line-height: 1.35;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .forum-strip {
+      margin-top: 36px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .forum-chip {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: rgba(255, 255, 255, 0.9);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow: 0 6px 18px rgba(4, 9, 45, 0.5);
+    }
+
+    .tradeoff-grid {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .tradeoff-card {
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 16px 18px;
+      min-height: 96px;
+      box-shadow: 0 10px 30px rgba(2, 6, 32, 0.45);
+    }
+
+    .tradeoff-card .label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.58);
+      margin-bottom: 8px;
+    }
+
+    .tradeoff-card .value {
+      font-size: 24px;
+      line-height: 1.15;
+      font-weight: 600;
+    }
+
+    .benefits {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .benefit {
+      background: rgba(10, 17, 68, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 16px 16px;
+      min-height: 100px;
+      box-shadow: 0 10px 26px rgba(2, 6, 32, 0.45);
+    }
+
+    .benefit h3 {
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fbc2e6;
+      margin-bottom: 8px;
+    }
+
+    .benefit p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 600;
+    }
+
+    .s1-anim-title { animation: s1Title 30s linear forwards; }
+    .s1-anim-strip { animation: s1Strip 30s linear forwards; }
+    .s1-anim-tradeoffs { animation: s1Tradeoffs 30s linear forwards; }
+    .s1-anim-benefits { animation: s1Benefits 30s linear forwards; }
+
+    .scene-2-layout {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 24px;
+      height: calc(100% - 24px);
+      align-items: stretch;
+    }
+
+    .panel {
+      background: linear-gradient(170deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.17);
+      border-radius: 18px;
+      box-shadow: 0 16px 32px rgba(3, 7, 36, 0.5);
+      padding: 24px;
+      backdrop-filter: blur(8px);
+    }
+
+    .panel h2 {
+      font-size: 36px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .panel p {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .decision-forums {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .forum-node {
+      background: rgba(12, 20, 82, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .forum-node .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6fcb, #95a0ff);
+      box-shadow: 0 0 10px rgba(255, 64, 129, 0.8);
+      flex-shrink: 0;
+    }
+
+    .path-title {
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ffc5e7;
+      margin-bottom: 10px;
+    }
+
+    .decision-path {
+      position: relative;
+      padding: 8px 12px 8px 14px;
+      margin-top: 4px;
+    }
+
+    .decision-path::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 14px;
+      bottom: 14px;
+      width: 3px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #8f9aff, #ff4fa8);
+      opacity: 0.7;
+    }
+
+    .path-step {
+      position: relative;
+      margin: 14px 0 14px 20px;
+      padding: 10px 14px 10px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(8, 15, 63, 0.75);
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 8px 22px rgba(2, 6, 32, 0.42);
+    }
+
+    .path-step::before {
+      content: "";
+      position: absolute;
+      left: -18px;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff4fa8;
+      transform: translateY(-50%);
+      box-shadow: 0 0 10px rgba(255, 79, 168, 0.95);
+    }
+
+    .path-glow {
+      position: absolute;
+      left: 17px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.95);
+      animation: pathPulse 7s ease-in-out infinite;
+    }
+
+    .scene-3 h1 {
+      font-size: 60px;
+      max-width: 1260px;
+    }
+
+    .cross-layout {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.14fr 0.86fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .screenshot-shell {
+      position: relative;
+      background: rgba(4, 9, 46, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(2, 6, 34, 0.65);
+      min-height: 420px;
+    }
+
+    .screenshot-shell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 49% 50%;
+      display: block;
+      filter: saturate(1.12) contrast(1.06);
+    }
+
+    .focus-box {
+      position: absolute;
+      border: 2px solid #ff4fa8;
+      border-radius: 12px;
+      background: rgba(255, 79, 168, 0.1);
+      box-shadow: 0 0 20px rgba(255, 79, 168, 0.6);
+      animation: focusBlink 1.6s ease-in-out infinite;
+    }
+
+    .focus-box.one { left: 5.5%; top: 11.5%; width: 28%; height: 18%; }
+    .focus-box.two { left: 36.5%; top: 41%; width: 28%; height: 18%; animation-delay: 0.4s; }
+    .focus-box.three { left: 68%; top: 41%; width: 28%; height: 18%; animation-delay: 0.8s; }
+
+    .cross-panel {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 14px;
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 18px 40px rgba(2, 6, 34, 0.6);
+    }
+
+    .kpi {
+      background: rgba(8, 15, 63, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .kpi .kpi-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.62);
+      margin-bottom: 5px;
+    }
+
+    .kpi .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .kpi .kpi-value strong {
+      color: #ff8acb;
+      text-shadow: 0 0 16px rgba(255, 79, 168, 0.6);
+    }
+
+    .next-best {
+      margin-top: 4px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(11, 19, 74, 0.86);
+      padding: 14px;
+    }
+
+    .next-best h3 {
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ffc7e8;
+      margin-bottom: 8px;
+    }
+
+    .next-best ul {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .next-best li::before {
+      content: "▶";
+      color: #ff73be;
+      margin-right: 8px;
+      font-size: 12px;
+      position: relative;
+      top: -1px;
+    }
+
+    .final-line {
+      position: absolute;
+      left: 80px;
+      right: 80px;
+      bottom: 52px;
+      text-align: center;
+      font-size: 32px;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      text-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      animation: finalLine 30s linear forwards;
+    }
+
+    .scene-2 .panel-left { animation: s2Left 30s linear forwards; }
+    .scene-2 .panel-right { animation: s2Right 30s linear forwards; }
+    .scene-3 .cross-layout { animation: s3Layout 30s linear forwards; }
+    .scene-3 .subheadline { animation: s3Sub 30s linear forwards; }
+
+    @keyframes sceneOne {
+      0% { opacity: 0; transform: scale(1.03); }
+      2% { opacity: 1; transform: scale(1); }
+      31% { opacity: 1; transform: scale(1); }
+      35% { opacity: 0; transform: scale(1.01); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes sceneTwo {
+      0%, 32% { opacity: 0; transform: scale(1.03); }
+      36% { opacity: 1; transform: scale(1); }
+      64% { opacity: 1; transform: scale(1); }
+      68% { opacity: 0; transform: scale(1.01); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes sceneThree {
+      0%, 65% { opacity: 0; transform: scale(1.03); }
+      69% { opacity: 1; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes s1Title {
+      0%, 1% { opacity: 0; transform: translateY(30px); }
+      4%, 31% { opacity: 1; transform: translateY(0); }
+      35%, 100% { opacity: 0; transform: translateY(8px); }
+    }
+
+    @keyframes s1Strip {
+      0%, 4% { opacity: 0; transform: translateY(20px); }
+      7%, 31% { opacity: 1; transform: translateY(0); }
+      35%, 100% { opacity: 0; }
+    }
+
+    @keyframes s1Tradeoffs {
+      0%, 8% { opacity: 0; transform: translateY(18px); }
+      11%, 31% { opacity: 1; transform: translateY(0); }
+      35%, 100% { opacity: 0; }
+    }
+
+    @keyframes s1Benefits {
+      0%, 12% { opacity: 0; transform: translateY(18px); }
+      15%, 31% { opacity: 1; transform: translateY(0); }
+      35%, 100% { opacity: 0; }
+    }
+
+    @keyframes s2Left {
+      0%, 36% { opacity: 0; transform: translateX(-28px); }
+      40%, 64% { opacity: 1; transform: translateX(0); }
+      68%, 100% { opacity: 0; transform: translateX(-10px); }
+    }
+
+    @keyframes s2Right {
+      0%, 39% { opacity: 0; transform: translateX(30px); }
+      43%, 64% { opacity: 1; transform: translateX(0); }
+      68%, 100% { opacity: 0; transform: translateX(8px); }
+    }
+
+    @keyframes pathPulse {
+      0% { top: 14px; opacity: 0.95; }
+      49% { top: calc(100% - 22px); opacity: 0.95; }
+      50% { top: 14px; opacity: 0; }
+      100% { top: calc(100% - 22px); opacity: 0.95; }
+    }
+
+    @keyframes s3Layout {
+      0%, 69% { opacity: 0; transform: translateY(24px); }
+      73%, 100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes s3Sub {
+      0%, 66% { opacity: 0; transform: translateY(14px); }
+      71%, 100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes finalLine {
+      0%, 82% { opacity: 0; transform: translateY(10px); }
+      87%, 100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes focusBlink {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 0.85; }
+    }
+
+    @keyframes topBarFade {
+      0%, 96% { opacity: 1; }
+      100% { opacity: 0.75; }
+    }
+
+    @keyframes progress {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="video-root">
+    <div class="scanline"></div>
+
+    <div class="top-bar">
+      <div>Agentic BDI Platform • Sales Story</div>
+      <div class="badge">Superior Decision Path + Cross-Sell Expansion</div>
+    </div>
+
+    <section class="scene scene-1">
+      <div class="s1-anim-title">
+        <h1>
+          Simplifying Banking Decisions with <span class="gradient-word">Agentic BDI</span>
+        </h1>
+        <div class="subheadline">
+          From complex analytics to confident actions: BDI brings Moody's intelligence directly into each client's decision context.
+        </div>
+      </div>
+
+      <div class="forum-strip s1-anim-strip">
+        <span class="forum-chip">Origination</span>
+        <span class="forum-chip">Structuring</span>
+        <span class="forum-chip">Credit Committee</span>
+        <span class="forum-chip">Strategy & Planning</span>
+        <span class="forum-chip">Portfolio Monitoring</span>
+      </div>
+
+      <div class="tradeoff-grid s1-anim-tradeoffs">
+        <div class="tradeoff-card">
+          <div class="label">Core Trade-off</div>
+          <div class="value">Risk <span class="gradient-word">vs</span> Return</div>
+        </div>
+        <div class="tradeoff-card">
+          <div class="label">Core Trade-off</div>
+          <div class="value">Pricing <span class="gradient-word">vs</span> Competitiveness</div>
+        </div>
+        <div class="tradeoff-card">
+          <div class="label">Core Trade-off</div>
+          <div class="value">Growth <span class="gradient-word">vs</span> Capital</div>
+        </div>
+        <div class="tradeoff-card">
+          <div class="label">Core Trade-off</div>
+          <div class="value">Relationships <span class="gradient-word">vs</span> Limits</div>
+        </div>
+      </div>
+
+      <div class="benefits s1-anim-benefits">
+        <div class="benefit">
+          <h3>Effortless Decisions</h3>
+          <p>Streamline prep and decision readiness.</p>
+        </div>
+        <div class="benefit">
+          <h3>Confidence & Consistency</h3>
+          <p>Improve quality across every decision forum.</p>
+        </div>
+        <div class="benefit">
+          <h3>Seamless Integration</h3>
+          <p>Fits existing workflows and committees.</p>
+        </div>
+        <div class="benefit">
+          <h3>Maximize Value</h3>
+          <p>Leverage current analytics investments fully.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene scene-2">
+      <div class="scene-2-layout">
+        <div class="panel panel-left">
+          <h2>Where real banking decisions happen</h2>
+          <p>
+            Banks often optimize one workflow, but decisions happen across many forums. BDI unifies origination, structuring,
+            credit committee, portfolio, capital, and strategy into one decision intelligence layer.
+          </p>
+
+          <div class="decision-forums">
+            <div class="forum-node"><span class="dot"></span> Origination</div>
+            <div class="forum-node"><span class="dot"></span> Structuring</div>
+            <div class="forum-node"><span class="dot"></span> Credit Committee</div>
+            <div class="forum-node"><span class="dot"></span> Portfolio Management</div>
+            <div class="forum-node"><span class="dot"></span> Capital Allocation</div>
+            <div class="forum-node"><span class="dot"></span> Strategy Planning</div>
+          </div>
+        </div>
+
+        <div class="panel panel-right">
+          <div class="path-title">Superior Decision Path • Powered by Agentic BDI</div>
+          <div class="decision-path">
+            <div class="path-glow"></div>
+            <div class="path-step"><strong>1. Ingest Full Context</strong><br>Data + research + policy + market signals.</div>
+            <div class="path-step"><strong>2. Reason Across Trade-offs</strong><br>Surface gain / give-up explicitly for each option.</div>
+            <div class="path-step"><strong>3. Recommend Next Best Action</strong><br>Evidence-backed recommendations for stakeholders.</div>
+            <div class="path-step"><strong>4. Decide with Governance</strong><br>Committee-ready framing and transparent rationale.</div>
+            <div class="path-step"><strong>5. Monitor and Adapt</strong><br>Continuous learning across portfolios and markets.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene scene-3">
+      <h1>
+        Cross-Selling Objective: Expand Client Value with
+        <span class="gradient-word">Connected Resources</span>
+      </h1>
+      <div class="subheadline">
+        Use BDI to identify what each client has already connected and trigger targeted next-product recommendations at the right decision moment.
+      </div>
+
+      <div class="cross-layout">
+        <div class="screenshot-shell">
+          <img src="../bdi_connected_resources.png" alt="Connected resource dashboard">
+          <div class="focus-box one"></div>
+          <div class="focus-box two"></div>
+          <div class="focus-box three"></div>
+        </div>
+
+        <div class="cross-panel">
+          <div class="kpi">
+            <div class="kpi-label">Current Footprint from Provided View</div>
+            <div class="kpi-value"><strong>5</strong> connected • 4 open opportunities</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Cross-Sell Objective</div>
+            <div class="kpi-value">Lift attach rate by <strong>+25%</strong> in 2 quarters</div>
+          </div>
+          <div class="next-best">
+            <h3>BDI Recommended Next-Best Cross-Sell</h3>
+            <ul>
+              <li>Credit Portfolio Analytics for concentration monitoring</li>
+              <li>Impairment Analysis for CECL-linked decision support</li>
+              <li>Benchmark Insights for committee-ready positioning</li>
+              <li>Balance Sheet Analytics for strategy planning alignment</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="final-line">
+      Agentic BDI turns analytics into action — and every decision moment into a cross-sell growth moment.
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-fill"></div>
+    </div>
+  </div>
+</body>
+</html>
